@@ -1,0 +1,433 @@
+{% extends 'navbar.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <style>
+     body {
+        background-color: black; /* Set background color to black */
+        color: black; /* Set text color to white */
+    }
+        .wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: black;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+        .details {
+            padding: 15px;
+             background-color: black; /* Set background color of details to black */
+        color: white;
+        }
+        .tags .tag {
+            background-color: #f0f0f0;
+            color: #333333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        .cast ul {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        /* Filter Toggle */
+        #filterToggle {
+            width: 30px;
+            height: 30px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 1000;
+
+        }
+
+
+      #filterToggle div {
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+@keyframes glow {
+    0% { box-shadow: 0 0 5px #F7EF8A; }
+    50% { box-shadow: 0 0 15px #F7EF8A; }
+    100% { box-shadow: 0 0 5px #F7EF8A; }
+}
+
+/* Add hover style for the toggle lines */
+#filterToggle:hover div {
+    background-color: #F7EF8A;
+    animation: glow 1.5s infinite alternate;
+}
+
+        /* Rotate lines to create an 'X' shape when toggled */
+        #filterToggle.active div:first-child {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        #filterToggle.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        #filterToggle.active div:last-child {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Filter Options */
+        #filterOptions {
+            position: fixed;
+            top: 70px; /* Adjust as needed */
+            right: 20px;
+            background-color: black;
+            color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 999;
+        }
+
+        /* Search Input */
+        #searchInput {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            background-color: #f9f9f9;
+            width: 250px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        #searchInput::placeholder {
+            color: #999;
+        }
+
+        /* Filter Button */
+        .filterButton {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #0078ff;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .filterButton:hover {
+            background-color: cyan;
+        }
+    </style>
+</head>
+<body>
+<div id="filterToggle" onclick="toggleFilters()">
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+<div id="filterOptions" style="display: none;">
+    <!-- Search Bar -->
+
+    <!-- Search Bar -->
+<input type="text" id="searchInput" placeholder="Search for movies...">
+<button onclick="searchMovies()">Search</button>
+
+
+<label for="castInput">Cast:</label>
+<input type="text" id="castInput" placeholder="Search by cast...">
+<button onclick="searchMoviesByCast()">Search</button>
+
+    <!-- Genre Filter -->
+    <select id="genreFilter">
+        <option value="">All Genres</option>
+        <!-- Genre options will be dynamically added here -->
+    </select>
+    <!-- Release Year Filter -->
+    <label>Release Year:</label>
+    <input type="number" id="minYear" placeholder="Min" min="1900" max="2024">
+    <input type="number" id="maxYear" placeholder="Max" min="1900" max="2024">
+    <!-- Language Filter -->
+    <select id="languageFilter">
+        <option value="">All Languages</option>
+        <!-- Language options will be dynamically added here -->
+    </select>
+    <!-- Rating Filter -->
+    <!-- Rating Filter -->
+<label>Min Rating:</label>
+<input type="number" id="minRating" placeholder="Min" min="0" max="10">
+<label>Max Rating:</label>
+<input type="number" id="maxRating" placeholder="Max" min="0" max="10">
+
+    <button onclick="filterMovies()" class="filterButton">Apply Filters</button>
+</div>
+<div class="wrapper" id="movieList">
+    <!-- Movie cards will be dynamically added here -->
+</div>
+
+
+</body>
+<script>
+    function toggleFilters() {
+        var filterOptions = document.getElementById("filterOptions");
+        var filterToggle = document.getElementById("filterToggle");
+
+        filterOptions.style.display = filterOptions.style.display === "none" ? "block" : "none";
+        filterToggle.classList.toggle("active");
+    }
+
+    // Function to fetch movies based on filter options from TMDb API
+    // Function to fetch movies based on filter options from TMDb API
+// Function to fetch movies based on filter options from TMDb API
+// Function to fetch movies based on filter options from TMDb API
+function fetchMovies(apiKey, selectedGenre, selectedLanguage, minYear, maxYear, minRating, maxRating) {
+    const baseUrl = 'https://api.themoviedb.org/3/discover/movie';
+    const apiKeyParam = `api_key=${apiKey}`;
+    const genreParam = selectedGenre ? `&with_genres=${selectedGenre}` : '';
+    const languageParam = selectedLanguage ? `&with_original_language=${selectedLanguage}` : '';
+    const minYearParam = minYear ? `&primary_release_date.gte=${minYear}-01-01` : '';
+    const maxYearParam = maxYear ? `&primary_release_date.lte=${maxYear}-12-31` : '';
+    const minRatingParam = minRating ? `&vote_average.gte=${minRating}` : '';
+    const maxRatingParam = maxRating ? `&vote_average.lte=${maxRating}` : '';
+    const certificationParam = '&certification_country=US&certification.lte=G'; // Exclude movies rated as 18+
+
+    const url = `${baseUrl}?${apiKeyParam}${genreParam}${languageParam}${minYearParam}${maxYearParam}${minRatingParam}${maxRatingParam}${certificationParam}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing movie list
+            const movieList = document.getElementById("movieList");
+            movieList.innerHTML = '';
+
+            // Display movies
+            data.results.forEach(movie => {
+                const movieCard = document.createElement("div");
+                movieCard.className = "card";
+                movieCard.innerHTML = `
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster">
+                    </div>
+                    <div class="details">
+                        <h1>${movie.title}</h1>
+                        <h2>${movie.release_date} • ${movie.vote_average}/10</h2>
+                        <p class="desc">${movie.overview}</p>
+                    </div>`;
+                movieList.appendChild(movieCard);
+            });
+        })
+        .catch(error => console.error('Error fetching movies:', error));
+}
+
+    // Function to fetch genres from TMDb API
+    function fetchGenres(apiKey) {
+        const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const genreFilter = document.getElementById("genreFilter");
+                data.genres.forEach(genre => {
+                    const option = document.createElement("option");
+                    option.value = genre.id;
+                    option.textContent = genre.name;
+                    genreFilter.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching genres:', error));
+    }
+
+    // Function to fetch languages from TMDb API
+    function fetchLanguages(apiKey) {
+        const url = `https://api.themoviedb.org/3/configuration/languages?api_key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const languageFilter = document.getElementById("languageFilter");
+                data.forEach(language => {
+                    const option = document.createElement("option");
+                    option.value = language.iso_639_1;
+                    option.textContent = language.english_name;
+                    languageFilter.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching languages:', error));
+    }
+
+    // Call fetchGenres and fetchLanguages functions when the page loads initially
+    document.addEventListener('DOMContentLoaded', () => {
+        const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+        fetchGenres(apiKey);
+        fetchLanguages(apiKey);
+        filterMovies(); // Fetch movies based on default filter settings
+    });
+
+    // Function to handle filter changes and fetch movies
+
+    <!-- Add this script inside the <script> tag in your HTML code -->
+
+// Function to handle search and fetch movies
+// Function to handle search and fetch movies
+function searchMovies() {
+    const searchQuery = document.getElementById("searchInput").value.trim();
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+
+    // Construct the URL for fetching movies based on search query
+    const baseUrl = 'https://api.themoviedb.org/3/search/movie';
+    const apiKeyParam = `api_key=${apiKey}`;
+    const queryParam = `&query=${searchQuery}`;
+
+    const url = `${baseUrl}?${apiKeyParam}${queryParam}`;
+
+    // Fetch movies based on search query
+    return fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing movie list
+            const movieList = document.getElementById("movieList");
+            movieList.innerHTML = '';
+
+            // Display movies
+            data.results.forEach(movie => {
+                const movieCard = document.createElement("div");
+                movieCard.className = "card";
+                movieCard.innerHTML = `
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster">
+                    </div>
+                    <div class="details">
+                        <h1>${movie.title}</h1>
+                        <h2>${movie.release_date} • ${movie.vote_average}/10</h2>
+                        <p class="desc">${movie.overview}</p>
+                    </div>`;
+                movieList.appendChild(movieCard);
+            });
+        })
+        .catch(error => console.error('Error fetching movies:', error));
+}
+
+// Function to handle filter changes and fetch movies
+// Function to handle filter changes and fetch movies
+function filterMovies() {
+    const selectedGenre = document.getElementById("genreFilter").value;
+    const selectedLanguage = document.getElementById("languageFilter").value;
+    const minYear = document.getElementById("minYear").value;
+    const maxYear = document.getElementById("maxYear").value;
+    const minRating = document.getElementById("minRating").value; // New parameter
+    const maxRating = document.getElementById("maxRating").value; // New parameter
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+
+    // Exclude adult content and 18 plus movies
+    const excludeAdult = true;
+
+    fetchMovies(apiKey, selectedGenre, selectedLanguage, minYear, maxYear, minRating, maxRating, excludeAdult)
+        .then(data => {
+            // Clear existing movie list
+            const movieList = document.getElementById("movieList");
+            movieList.innerHTML = '';
+
+            // Display movies
+            data.results.forEach(movie => {
+                const movieCard = document.createElement("div");
+                movieCard.className = "card";
+                movieCard.innerHTML = `
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster">
+                    </div>
+                    <div class="details">
+                        <h1>${movie.title}</h1>
+                        <h2>${movie.release_date} • ${movie.vote_average}/10</h2>
+                        <p class="desc">${movie.overview}</p>
+                    </div>`;
+                movieList.appendChild(movieCard);
+            });
+        })
+        .catch(error => console.error('Error fetching movies:', error));
+}
+
+function searchMoviesByCast() {
+    const castQuery = document.getElementById("castInput").value.trim();
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+
+    // Construct the URL for fetching movies based on cast query
+    const baseUrl = 'https://api.themoviedb.org/3/search/person';
+    const apiKeyParam = `api_key=${apiKey}`;
+    const queryParam = `&query=${castQuery}`;
+
+    const url = `${baseUrl}?${apiKeyParam}${queryParam}`;
+
+    // Fetch cast members based on search query
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                const castId = data.results[0].id; // Get the ID of the first cast member
+                fetchMoviesByCast(apiKey, castId); // Call function to fetch movies by cast
+            } else {
+                alert('No cast members found for the search query.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cast members:', error);
+            alert('Error fetching cast members. Please try again later.');
+        });
+}
+
+function fetchMoviesByCast(apiKey, castId) {
+    // Construct the URL for fetching movies based on cast ID
+    const baseUrl = 'https://api.themoviedb.org/3/discover/movie';
+    const apiKeyParam = `api_key=${apiKey}`;
+    const castParam = `&with_cast=${castId}`;
+
+    const url = `${baseUrl}?${apiKeyParam}${castParam}`;
+
+    // Fetch movies based on cast ID
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing movie list
+            const movieList = document.getElementById("movieList");
+            movieList.innerHTML = '';
+
+            // Display movies
+            data.results.forEach(movie => {
+                const movieCard = document.createElement("div");
+                movieCard.className = "card";
+                movieCard.innerHTML = `
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster">
+                    </div>
+                    <div class="details">
+                        <h1>${movie.title}</h1>
+                        <h2>${movie.release_date} • ${movie.vote_average}/10</h2>
+                        <p class="desc">${movie.overview}</p>
+                    </div>`;
+                movieList.appendChild(movieCard);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching movies:', error);
+            alert('Error fetching movies. Please try again later.');
+        });
+}
+
+// Add event listener to the "Apply Filters" button
+document.getElementById("applyFiltersButton").addEventListener("click", filterMovies);
+
+</script>
+</html>
+{% endblock %}

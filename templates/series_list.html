@@ -1,0 +1,382 @@
+{% extends 'seriesnavbar.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series List</title>
+    <style>
+     body {
+        background-color: black; /* Set background color to black */
+        color: black; /* Set text color to white */
+    }
+        .wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 0;
+        }
+        .card {
+            background-color: black;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+        .details {
+            padding: 15px;
+            background-color: black; /* Set background color of details to black */
+        color: white;
+        }
+        .tags .tag {
+            background-color: #f0f0f0;
+            color: #333333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        nav {
+    margin-bottom: 0; /* Set margin-bottom to 0 */
+}
+        .cast ul {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        /* Filter Toggle */
+        #filterToggle {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s; /* Add transition for background-color */
+}
+
+      #filterToggle div {
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+@keyframes glow {
+    0% { box-shadow: 0 0 5px #F7EF8A; }
+    50% { box-shadow: 0 0 15px #F7EF8A; }
+    100% { box-shadow: 0 0 5px #F7EF8A; }
+}
+
+/* Add hover style for the toggle lines */
+#filterToggle:hover div {
+    background-color: #F7EF8A;
+    animation: glow 1.5s infinite alternate;
+}
+
+        /* Rotate lines to create an 'X' shape when toggled */
+        #filterToggle.active div:first-child {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        #filterToggle.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        #filterToggle.active div:last-child {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+        #filterOptions {
+            position: fixed;
+            top: 70px; /* Adjust as needed */
+            right: 20px;
+            background-color: black;
+            color:white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 999;
+        }
+        /* Search Input */
+        #searchInput {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            background-color: #f9f9f9;
+            width: 300px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        #searchInput::placeholder {
+            color: #999;
+        }
+
+        .filterButton {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #0078ff;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .filterButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="filterToggle" onclick="toggleFilters()">
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+<div id="filterOptions" style="display: none;">
+    <!-- Filter options content goes here -->
+    <input type="text" id="searchInput" placeholder="Search for series...">
+    <button onclick="searchSeries()">Search</button>
+
+
+    <label for="castInput">Cast:</label>
+    <input type="text" id="castInput" placeholder="Search by cast...">
+    <button onclick="searchSeriesByCast()">Search</button>
+    <!-- Genre Filter -->
+    <label for="genreFilter">Genre:</label>
+    <select id="genreFilter">
+        <option value="">All Genres</option>
+        <!-- Genre options will be dynamically added here -->
+    </select>
+
+    <!-- Release Year Filter -->
+    <label>Release Year:</label>
+    <input type="number" id="minYear" placeholder="Min" min="1900" max="2024">
+    <input type="number" id="maxYear" placeholder="Max" min="1900" max="2024">
+    <select id="languageFilter">
+        <option value="">All Languages</option>
+        <!-- Language options will be dynamically added here -->
+    </select>
+    <!-- Rating Filter -->
+    <label>Minimum Rating:</label>
+<input type="number" id="minRating" placeholder="Min" min="0" max="10">
+<input type="number" id="maxRating" placeholder="Max" min="0" max="10">
+
+    <button onclick="filterSeries()" class="filterButton">Apply Filters</button>
+</div>
+
+<div class="wrapper" id="seriesList">
+    <!-- Series cards will be dynamically added here -->
+</div>
+<script>
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace with your actual TMDb API key
+    function toggleFilters() {
+        var filterOptions = document.getElementById("filterOptions");
+        var filterToggle = document.getElementById("filterToggle");
+
+        filterOptions.style.display = filterOptions.style.display === "none" ? "block" : "none";
+        filterToggle.classList.toggle("active");
+    }
+    function searchSeries(apiKey) {
+        var searchQuery = document.getElementById("searchInput").value.trim();
+        // You can perform actions based on the search query, such as filtering series by name
+        console.log("Search query:", searchQuery);
+        const url = `${baseUrl}?${apiKeyParam}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const seriesList = document.getElementById("seriesList");
+
+                data.results.forEach(series => {
+                    const seriesCard = document.createElement("div");
+                    seriesCard.className = "card";
+                    seriesCard.innerHTML = `
+                        <div class="poster">
+                            <img src="https://image.tmdb.org/t/p/w500${series.poster_path}" alt="${series.name} Poster">
+                        </div>
+                        <div class="details">
+                            <h1>${series.name}</h1>
+                            <h2>${series.first_air_date} • ${series.vote_average}/10</h2>
+                            <p class="desc">${series.overview}</p>
+                        </div>`;
+                    seriesList.appendChild(seriesCard);
+                });
+            })
+    }
+    function fetchSeries(apiKey) {
+        const baseUrl = 'https://api.themoviedb.org/3/discover/tv';
+        const apiKeyParam = `api_key=${apiKey}`;
+
+        const url = `${baseUrl}?${apiKeyParam}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const seriesList = document.getElementById("seriesList");
+
+                data.results.forEach(series => {
+                    const seriesCard = document.createElement("div");
+                    seriesCard.className = "card";
+                    seriesCard.innerHTML = `
+                        <div class="poster">
+                            <img src="https://image.tmdb.org/t/p/w500${series.poster_path}" alt="${series.name} Poster">
+                        </div>
+                        <div class="details">
+                            <h1>${series.name}</h1>
+                            <h2>${series.first_air_date} • ${series.vote_average}/10</h2>
+                            <p class="desc">${series.overview}</p>
+                        </div>`;
+                    seriesList.appendChild(seriesCard);
+                });
+            })
+            .catch(error => console.error('Error fetching series:', error));
+    }
+
+    function searchSeriesByCast() {
+    const castQuery = document.getElementById("castInput").value.trim();
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+
+    // Construct the URL for fetching movies based on cast query
+    const baseUrl = 'https://api.themoviedb.org/3/search/person';
+    const apiKeyParam = `api_key=${apiKey}`;
+    const queryParam = `&query=${castQuery}`;
+
+    const url = `${baseUrl}?${apiKeyParam}${queryParam}`;
+
+    // Fetch cast members based on search query
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length > 0) {
+                const castId = data.results[0].id; // Get the ID of the first cast member
+                fetchMoviesByCast(apiKey, castId); // Call function to fetch movies by cast
+            } else {
+                alert('No cast members found for the search query.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cast members:', error);
+            alert('Error fetching cast members. Please try again later.');
+        });
+    }
+
+    function fetchSeriesByCast(apiKey, castId) {
+      const baseUrl = 'https://api.themoviedb.org/3/discover/tv';
+      const apiKeyParam = `api_key=${apiKey}`;
+      const castParam = `&with_people=${castId}`;
+
+      const url = `${baseUrl}?${apiKeyParam}${castParam}`;
+
+      fetch(url)
+          .then(response => response.json())
+          .then(data => {
+              const seriesList = document.getElementById("seriesList"); // Update element ID for series
+              seriesList.innerHTML = '';
+
+              data.results.forEach(series => {
+                  const seriesCard = document.createElement("div");
+                  seriesCard.className = "card";
+                  seriesCard.innerHTML = `
+                      <div class="poster">
+                          <img src="https://image.tmdb.org/t/p/w500${series.poster_path}" alt="${series.name} Poster">
+                      </div>
+                      <div class="details">
+                          <h1>${series.name}</h1>
+                          <h2>${series.first_air_date}</h2>
+                          <p class="desc">${series.overview}</p>
+                          </div>`;
+                  seriesList.appendChild(seriesCard);
+              });
+          })
+          .catch(error => {
+              console.error('Error fetching series:', error);
+              alert('Error fetching series. Please try again later.');
+          });
+    }
+
+    function fetchGenres(apiKey) {
+        const url = `https://api.themoviedb.org/3/genre/tv/list?api_key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const genreFilter = document.getElementById("genreFilter");
+                data.genres.forEach(genre => {
+                    const option = document.createElement("option");
+                    option.value = genre.id;
+                    option.textContent = genre.name;
+                    genreFilter.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching genres:', error));
+    }
+    function fetchLanguages(apiKey) {
+        const url = `https://api.themoviedb.org/3/configuration/languages?api_key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const languageFilter = document.getElementById("languageFilter");
+                data.forEach(language => {
+                    const option = document.createElement("option");
+                    option.value = language.iso_639_1;
+                    option.textContent = language.english_name;
+                    languageFilter.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching languages:', error));
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchSeries(apiKey);
+        fetchGenres(apiKey);
+        fetchLanguages(apiKey);
+    });
+
+    function filterSeries() {
+    const selectedGenre = document.getElementById("genreFilter").value;
+    const selectedLanguage = document.getElementById("languageFilter").value;
+    const minYear = document.getElementById("minYear").value;
+    const maxYear = document.getElementById("maxYear").value;
+    const minRating = document.getElementById("minRating").value; // New parameter
+    const maxRating = document.getElementById("maxRating").value; // New parameter
+    const apiKey = '60d3d7a3955eb7168386c2ae16fc5df1'; // Replace 'YOUR_API_KEY' with your actual TMDb API key
+
+    fetchSeries(apiKey, selectedGenre, selectedLanguage, minYear, maxYear, minRating, maxRating)
+        .then(data => {
+            // Clear existing series list
+            const seriesList = document.getElementById("seriesList");
+            seriesList.innerHTML = '';
+
+            // Display TV series
+            data.results.forEach(series => {
+                const seriesCard = document.createElement("div");
+                seriesCard.className = "card";
+                seriesCard.innerHTML = `
+                    <div class="poster">
+                        <img src="https://image.tmdb.org/t/p/w500${series.poster_path}" alt="${series.name} Poster">
+                    </div>
+                    <div class="details">
+                        <h1>${series.name}</h1>
+                        <h2>${series.first_air_date} • ${series.vote_average}/10</h2>
+                        <p class="desc">${series.overview}</p>
+                    </div>`;
+                seriesList.appendChild(seriesCard);
+            });
+        })
+        .catch(error => console.error('Error fetching series:', error));
+}
+
+</script>
+</body>
+</html>
+
+{% endblock %}
+

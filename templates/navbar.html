@@ -1,0 +1,121 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        /* Your existing CSS styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            color: #222;
+            font-family: system-ui, sans-serif;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #222;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 20px 20px #EF007E;
+        }
+
+        .nav .container {
+            display: flex;
+            justify-content: center; /* Center-align the items horizontally */
+            align-items: center;
+            padding: 20px 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            justify-content: center;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #fff;
+            padding: 7px 15px;
+            transition: all 0.3s ease-in-out;
+
+        }
+
+        .nav.active {
+            background-color: #EF007E;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav.active a {
+            color: white;
+        }
+
+        .nav.active .container {
+            padding: 10px 0;
+        }
+
+        .nav a.current,
+        .nav a:hover {
+            color: #F7EF8A;
+            box-shadow: 0 0 10px 0 #F7EF8A inset, 0 0 20px 2px #F7EF8A;
+        border: 3px solid #F7EF8A;
+            font-weight: bold;
+        }
+
+        .logo {
+            text-align: center; /* Center-align the logo */
+            flex: 1; /* Allow the logo to take up remaining space */
+        }
+
+    </style>
+</head>
+<body>
+<nav class="nav">
+    <div class="container">
+        <h1 class="logo"><a href="{% url 'home' %}">MOVIE RECOMMENDATION SYSTEM</a></h1>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+            <li><a href="{% url 'privacypolicy' %}">Privacy Policy</a></li>
+        </ul>
+    </div>
+</nav>
+<br>
+<br>
+<br>
+<br>
+
+{% block content %}
+
+{% endblock %}
+<script>
+    const nav = document.querySelector('.nav');
+
+    window.addEventListener('scroll', fixNav);
+
+    function fixNav() {
+        if (window.scrollY > nav.offsetHeight + 150) {
+            nav.classList.add('active');
+        } else {
+            nav.classList.remove('active');
+        }
+    }
+</script>
+</body>
+</html>

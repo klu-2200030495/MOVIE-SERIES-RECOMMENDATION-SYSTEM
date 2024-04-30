@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+{% extends 'navbar.html'%}
+{% load static %}
+{% block content %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>meta.codes - Animated Login and Registration Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-Rws7H3+TxHzR8i24DP1PMvqf/eAxo5guO+8B1f1zLlHxu38mX2ksd5BYuXqlJltC5noZ/0vKQDHEssg9pOTzTg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(#2196f3, #e91e63);
+        background-image: url('{% static 'images/image1.jpg' %}');
+        overflow: hidden;
+    }
+
+    .wrapper {
+        position: relative;
+        width: 400px;
+        height: 500px;
+    }
+
+    .form-wrapper {
+    position: absolute;
+    top: 50px; /* Adjust the top margin to move the form down */
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: url('{% static 'images/avatar.jpg' %}');
+    background-size: cover;
+    /* Adjust as needed */
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border: 2px solid #fff;
+    /* Set the border color to white */
+    border-radius: 10px;
+    /* Adjust as needed */
+}
+
+    h2 {
+        font-size: 30px;
+        color: #fff;
+        /* Set the text color to white */
+        text-align: center;
+    }
+
+    .input-group {
+        position: relative;
+        width: 320px;
+        margin: 30px 0;
+    }
+
+    .input-group label {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: white;
+        padding: 0 5px;
+        pointer-events: none;
+        transition: .5s;
+    }
+
+    .input-group input {
+        width: 100%;
+        height: 40px;
+        font-size: 16px;
+        color: white;
+        padding: 0 10px;
+        background-color: transparent;
+        /* Set the background color to transparent */
+        border: 1px solid white;
+        outline: none;
+        border-radius: 5px;
+    }
+
+    .input-group input:focus~label,
+    .input-group input:valid~label {
+        top: 0;
+        font-size: 12px;
+        background: black;
+        /* Change background color to black */
+        color: #fff;
+        /* Change text color to white */
+    }
+
+    .forgot-pass {
+        margin: -15px 0 15px;
+    }
+
+    .forgot-pass a {
+        color: white;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .forgot-pass a:hover {
+        text-decoration: underline;
+    }
+
+    .btn {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding-top: 10px;
+        /* Adjust as needed */
+        padding-bottom: 10px;
+        /* Adjust as needed */
+        text-align: center;
+        background: transparent;
+        border: 3px solid #fff;
+        /* White border */
+        border-radius: 5px;
+        font-size: 16px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        overflow: hidden;
+    }
+
+    .btn:hover {
+        box-shadow: 0 0 10px 0 white inset, 0 0 20px 2px white;
+        border: 3px solid white;
+    }
+
+    .btn:hover {
+        border-color: #fff;
+        /* Change border color to white on hover */
+    }
+
+    .sign-link {
+        font-size: 14px;
+        text-align: center;
+        margin: 25px 0;
+    }
+
+    .sign-link p {
+        color: white;
+    }
+    .sign-link p a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .sign-link p a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<body>
+
+
+    <div class="wrapper">
+        <div class="form-wrapper sign-in">
+
+
+            <form action="/profile/" method="post">
+                {% csrf_token %}
+
+                <h2>Login</h2>
+                <div class="input-group">
+                    <input type="text" name="username" required autocomplete="new-username">
+                    <label>Username</label>
+                </div>
+                <div class="input-group">
+                        <input type="password" name="password" required autocomplete="new-password">
+                        <label>Password</label>
+                    </div>
+
+                <div class="forgot-pass">
+                    <a href="/reset/">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn">Login</button>
+
+                <div class="sign-link">
+                    <p style="color: white;">Don't have an account?<a href="{% url 'signup' %}" class="signUp-link">Sign Up</a></p>
+                </div>
+
+<!--                <div class="error-message">-->
+<!--                        {% if messages %}-->
+<!--                            {% for message in messages %}-->
+<!--                                <p>{{ message }}</p>-->
+<!--                            {% endfor %}-->
+<!--                        {% endif %}-->
+<!--                </div>-->
+
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
+{% endblock %}

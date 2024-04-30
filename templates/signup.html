@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+{% extends 'navbar.html'%}
+{%load static%}
+{% block content%}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> meta.codes - Animated Login and Registration Form </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-Rws7H3+TxHzR8i24DP1PMvqf/eAxo5guO+8B1f1zLlHxu38mX2ksd5BYuXqlJltC5noZ/0vKQDHEssg9pOTzTg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(#2196f3, #e91e63);
+     background-image: url('{%static 'images/image1.jpg'%}');
+    overflow: hidden;
+}
+
+.wrapper {
+    position: relative;
+    width: 400px;
+    height: 500px;
+}
+
+.form-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background: url('{% static 'images/avatar.jpg' %}');
+        background-size: cover; /* Adjust as needed */
+        box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+        border: 2px solid #fff; /* Set the border color to white */
+        border-radius: 10px; /* Adjust as needed */
+    }
+
+<!--.wrapper.animate-signUp .form-wrapper.sign-in {-->
+<!--    transform: rotate(7deg);-->
+
+<!--    animation: animateRotate .7s ease-in-out forwards;-->
+<!--    animation-delay: .3s;-->
+<!--}-->
+
+
+<!--.wrapper.animate-signIn .form-wrapper.sign-in {-->
+<!--    animation: animateSignIn 1.5s ease-in-out forwards;-->
+<!--}-->
+
+<!--@keyframes animateSignIn {-->
+<!--    0% {-->
+<!--        transform: translateX(0);-->
+<!--    }-->
+
+<!--    50% {-->
+<!--        transform: translateX(-500px);-->
+<!--    }-->
+
+<!--    100% {-->
+<!--        transform: translateX(0) rotate(7deg);-->
+<!--    }-->
+<!--}-->
+
+<!--.wrapper .form-wrapper.sign-up {-->
+<!--    transform: rotate(7deg);-->
+<!--}-->
+
+<!--.wrapper.animate-signIn .form-wrapper.sign-up {-->
+<!--    animation: animateRotate .7s ease-in-out forwards;-->
+<!--    animation-delay: .3s;-->
+<!--}-->
+
+<!--@keyframes animateRotate {-->
+<!--    0% {-->
+<!--        transform: rotate(7deg);-->
+<!--    }-->
+
+<!--    100% {-->
+<!--        transform: rotate(0);-->
+<!--        z-index: 1;-->
+<!--    }-->
+<!--}-->
+
+<!--.wrapper.animate-signUp .form-wrapper.sign-up {-->
+<!--    animation: animateSignUp 1.5s ease-in-out forwards;-->
+<!--}-->
+
+<!--@keyframes animateSignUp {-->
+<!--    0% {-->
+<!--        transform: translateX(0);-->
+<!--        z-index: 1;-->
+<!--    }-->
+
+<!--    50% {-->
+<!--        transform: translateX(500px);-->
+<!--    }-->
+
+<!--    100% {-->
+<!--        transform: translateX(0) rotate(7deg);-->
+<!--    }-->
+<!--}-->
+
+h2 {
+     font-size: 30px;
+        color: #fff; /* Set the text color to white */
+        text-align: center;
+}
+
+.input-group {
+    position: relative;
+    width: 320px;
+    margin: 30px 0;
+}
+
+.input-group label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: white;
+    padding: 0 5px;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.input-group input {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    color: white;
+    padding: 0 10px;
+    background: transparent;
+    border: 1px solid white; /* Change this line to set the border color to white */
+    outline: none;
+    border-radius: 5px;
+}
+
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: 0;
+    font-size: 12px;
+    background: black; /* Change background color to black */
+    color: #fff; /* Change text color to white */
+}
+
+.form-wrapper {
+    position: absolute;
+    top: 50px; /* Adjust the top margin to move the form down */
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: url('{% static 'images/avatar.jpg' %}');
+    background-size: cover;
+    /* Adjust as needed */
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border: 2px solid #fff;
+    /* Set the border color to white */
+    border-radius: 10px;
+    /* Adjust as needed */
+}
+.forgot-pass {
+    margin: -15px 0 15px;
+}
+
+.forgot-pass a {
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.forgot-pass a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 10px; /* Adjust as needed */
+    padding-bottom: 10px; /* Adjust as needed */
+    text-align: center;
+    background: transparent;
+    border: 3px solid #fff; /* White border */
+    border-radius: 5px;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+
+}
+
+.btn:hover {
+    box-shadow: 0 0 10px 0 white inset, 0 0 20px 2px white;
+    border: 3px solid white;
+}
+
+
+.btn:hover {
+    border-color: #fff; /* Change border color to white on hover */
+}
+
+
+.sign-link {
+    font-size: 14px;
+    text-align: center;
+    margin: 25px 0;
+}
+
+.sign-link p {
+    color: white;
+}
+
+.sign-link p a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.sign-link p a:hover {
+    text-decoration: underline;
+}
+.toggle-password fas fa-eye{
+ color: white;
+}
+
+    </style>
+</head>
+
+<body>
+
+   <div class="wrapper">
+    <div class="form-wrapper sign-up">
+        <form  method="post">
+            {% csrf_token %}
+            <h2>Sign Up</h2>
+            <div class="input-group">
+                <input type="text" name="name" required>
+                <label>Username</label>
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" required>
+                <label>Email</label>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" required>
+                <label>Password</label>
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+            <div class="sign-link">
+                <p>Already have an account? <a href="{% url 'login' %}" class="signIn-link">Sign In</a></p>
+            </div>
+        </form>
+    </div>
+<!--        <div class="form-wrapper sign-in">-->
+<!--            <form action="{% url 'movie_list' %}" method="post">-->
+<!--                {% csrf_token %}-->
+<!--                <h2>Login</h2>-->
+<!--                <div class="input-group">-->
+<!--                    <input type="text" required>-->
+<!--                    <label for="" style="color: white;">Username</label>-->
+<!--                </div>-->
+<!--               <div class="input-group">-->
+<!--    <input type="password" required>-->
+<!--    <i class="toggle-password fas fa-eye" style="color: white;"></i>-->
+<!--    <label for="" style="color: white;">Password</label>-->
+<!--</div>-->
+<!--                <div class="forgot-pass">-->
+<!--                    <a href="#">Forgot Password?</a>-->
+<!--                </div>-->
+
+<!--                <button type="submit" class="btn">Login</button>-->
+
+<!--                <div class="sign-link">-->
+<!--                    <p style="color: white;">Dont have an account?<a href="#" class="signUp-link">Sign Up</a></p>-->
+<!--                </div>-->
+<!--            </>-->
+<!--        </div>-->
+    </div>
+</body>
+<!--<script>-->
+<!--&lt;!&ndash;     const wrapper = document.querySelector('.wrapper');&ndash;&gt;-->
+<!--&lt;!&ndash;    const signUpLink = document.querySelector('.signUp-link');&ndash;&gt;-->
+<!--&lt;!&ndash;    const signInLink = document.querySelector('.signIn-link');&ndash;&gt;-->
+
+<!--&lt;!&ndash;    signUpLink.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        wrapper.classList.add('animate-signIn');&ndash;&gt;-->
+<!--&lt;!&ndash;        wrapper.classList.remove('animate-signUp');&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    signInLink.addEventListener('click', () => {&ndash;&gt;-->
+<!--&lt;!&ndash;        wrapper.classList.add('animate-signUp');&ndash;&gt;-->
+<!--&lt;!&ndash;        wrapper.classList.remove('animate-signIn');&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+<!--       $(document).ready(function() {-->
+<!--        $(".toggle-password").click(function() {-->
+<!--            $(this).toggleClass("fa-eye fa-eye-slash");-->
+<!--            var input = $($(this).siblings("input"));-->
+<!--            if (input.attr("type") == "password") {-->
+<!--                input.attr("type", "text");-->
+<!--            } else {-->
+<!--                input.attr("type", "password");-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+
+<!--</script>-->
+</html>
+{% endblock%}
